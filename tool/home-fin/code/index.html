@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>房产负担计算器</title>
+</head>
+<body>
+  <h1>房产负担计算器</h1>
+  <form>
+    <label>总价：</label>
+    <input id="total-price" type="number">
+    <br>
+    <label>首付：</label>
+    <input id="down-payment" type="number">
+    <br>
+    <label>利率：</label>
+    <input id="interest-rate" type="number" step="0.01">
+    <br>
+    <label>贷款年限：</label>
+    <input id="loan-years" type="number">
+    <br>
+    <label>还款方式：</label>
+    <select id="repayment-type">
+      <option value="等额本息">等额本息</option>
+      <option value="等额本金">等额本金</option>
+    </select>
+    <br>
+    <button type="button" id="calculate">计算</button>
+  </form>
+  <div id="result">
+    <p id="loan-amount"></p>
+    <p id="monthly-payment"></p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
