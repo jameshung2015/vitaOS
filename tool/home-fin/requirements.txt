@@ -1,0 +1,4 @@
+# tool/home-fin 依赖
+numpy
+pandas
+matplotlib
