@@ -1,0 +1,49 @@
+{
+    "api": {
+        "version": "v1",
+        "prefix": "/api/v1",
+        "name": "SumBot",
+        "host": "0.0.0.0",
+        "port": 5566,
+        "reload": true
+    },
+    "security": {
+        "secret_key": "your-secret-key-here",
+        "access_token_expire_minutes": 11520
+    },
+    "ai_service": {
+        "default": "oneapi",
+        "default_api_key": "sk-your-default-api-key-here",
+        "oneapi": {
+            "name": "OneAPI",
+            "api_base": "your_api_base_url_here",
+            "model": "your_model_name_here"
+        },
+        "openai": {
+            "name": "OpenAI",
+            "api_base": "your_api_base_url_here",
+            "model": "qwen2.5:72b"
+        },
+        "gemini": {
+            "name": "Google Gemini"
+        },
+        "azure": {
+            "name": "Azure OpenAI",
+            "api_base": null
+        },
+        "xunfei": {
+            "name": "讯飞星火",
+            "app_id": null
+        }
+    },
+    "redis": {
+        "host": "localhost",
+        "port": 6379
+    },
+    "rate_limit": {
+        "per_minute": 60
+    },
+    "logging": {
+        "level": "info"
+    }
+} 

@@ -2,3 +2,14 @@
 numpy
 pandas
 matplotlib
+
+# JavaScript 依赖
+npm
+
+# 启动 code 的依赖
+# 请确保在项目根目录下运行以下命令来安装和启动项目
+# 安装依赖
+npm install
+
+# 启动项目
+npm start
