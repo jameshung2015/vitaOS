@@ -8,6 +8,7 @@ import argparse
 import asyncio
 import aiohttp
 import json
+import platform
 from datetime import datetime
 
 # 添加src目录到Python路径
@@ -21,8 +22,11 @@ from src.utils.config_manager import ConfigManager
 # 获取日志记录器
 logger = get_logger("sumbot.service")
 
-# PID文件路径
-PID_FILE = os.path.join(ROOT_DIR, "sumbot.pid")
+# 根据操作系统设置PID文件路径
+if platform.system() == "Windows":
+    PID_FILE = os.path.join(os.getenv("TEMP"), "sumbot.pid")
+else:
+    PID_FILE = "/tmp/sumbot.pid"
 
 def get_pid():
     """获取服务进程ID"""
@@ -51,6 +55,9 @@ def is_service_running():
 
 async def test_api_endpoints(host, port):
     """测试API端点"""
+    # 在Windows上使用localhost
+    if platform.system() == "Windows":
+        host = "localhost"
     base_url = f"http://{host}:{port}"
     test_results = []
     
@@ -101,7 +108,13 @@ def stop_service():
     pid = get_pid()
     if pid:
         try:
-            os.kill(pid, signal.SIGTERM)
+            if platform.system() == "Windows":
+                # Windows使用taskkill命令
+                os.system(f"taskkill /PID {pid} /F")
+            else:
+                # Linux/Unix使用信号
+                os.kill(pid, signal.SIGTERM)
+            
             logger.info("正在停止服务...")
             # 等待进程结束
             for _ in range(10):
@@ -109,14 +122,15 @@ def stop_service():
                     break
                 time.sleep(0.5)
             else:
-                # 如果进程仍在运行，强制结束
-                try:
-                    os.kill(pid, signal.SIGKILL)
-                    logger.warning("服务未响应，强制终止")
-                except:
-                    pass
+                if platform.system() != "Windows":
+                    # 如果进程仍在运行，强制结束
+                    try:
+                        os.kill(pid, signal.SIGKILL)
+                        logger.warning("服务未响应，强制终止")
+                    except:
+                        pass
             logger.info("服务已停止")
-        except ProcessLookupError:
+        except (ProcessLookupError, OSError):
             logger.warning("服务进程不存在")
         
         try:
@@ -135,6 +149,13 @@ def start_service(config):
     
     host = config.get('host', '0.0.0.0')
     port = config.get('port', 5566)
+    
+    # 在Windows上使用localhost而不是0.0.0.0
+    if platform.system() == "Windows":
+        host = "localhost"
+    else:
+        # 在Linux上确保使用0.0.0.0
+        host = "0.0.0.0"
     
     logger.info(f"启动服务: http://{host}:{port}")
     logger.info(f"API文档: http://{host}:{port}/docs")
@@ -260,4 +281,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         logger.warning("操作被用户中断")
     except Exception as e:
-        logger.error(f"发生错误: {str(e)}") 
+        logger.error(f"发生错误: {str(e)}")

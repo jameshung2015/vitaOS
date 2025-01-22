@@ -1,0 +1,2 @@
+# tool/taskreport-feishutable 依赖
+requests

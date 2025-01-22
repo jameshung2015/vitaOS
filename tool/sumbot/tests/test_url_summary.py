@@ -3,7 +3,23 @@ import asyncio
 import json
 import pytest
 import os
+import subprocess
+import platform
 from datetime import datetime
+
+def check_firewall_windows():
+    """Windows系统检查防火墙"""
+    try:
+        # 检查端口5566是否开放
+        result = subprocess.run(
+            ['netsh', 'firewall', 'show', 'state'], 
+            capture_output=True, 
+            text=True
+        )
+        return True
+    except Exception as e:
+        print(f"防火墙检查失败: {str(e)}")
+        return False
 
 @pytest.mark.asyncio
 async def test_url_summary():
@@ -20,14 +36,29 @@ async def test_url_summary():
     print("\n开始测试URL总结功能...")
     print(f"目标URL: {test_url}")
     print(f"标签: {test_tags}")
-    print("-" * 50)
+    print("-" * 50 + "\n")
+
+    # 系统特定的防火墙检查
+    if platform.system() == 'Windows':
+        if not check_firewall_windows():
+            pytest.skip("Windows防火墙检查失败")
     
     try:
+        # 检查防火墙设置
+        print("\n检查防火墙设置...")
+        result = subprocess.run(['sudo', 'iptables', '-L', 'INPUT', '-v', '-n'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if result.returncode != 0:
+            raise Exception(f"无法检查防火墙设置: {result.stderr}")
+        if '5566' not in result.stdout:
+            raise Exception("防火墙未允许访问5566端口")
+        print("防火墙设置正确，允许访问5566端口")
+        
         async with aiohttp.ClientSession() as session:
             # 准备请求数据
             data = {
                 "url": test_url,
-                "tags": test_tags
+                "tags": test_tags,
+                "max_length": 500
             }
             
             # 发送POST请求
@@ -85,4 +116,4 @@ if __name__ == "__main__":
         print("\n测试被用户中断")
     except Exception as e:
         print(f"\n测试失败: {str(e)}")
-        exit(1) 
+        exit(1)

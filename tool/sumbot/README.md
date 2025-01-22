@@ -6,6 +6,9 @@
 
 - 支持URL内容总结
 - 支持文件内容总结
+- 支持视频内容总结（B站、抖音、YouTube、小红书）
+- 支持图片内容分析
+- 支持搜索内容总结
 - 自动生成追问问题
 - 支持多种AI模型（OpenAI、OneAPI、Gemini、Azure、讯飞）
 - 支持限流和缓存
@@ -93,6 +96,9 @@ python3 run.py
 ```bash
 # 启动服务（默认在5566端口）
 python3 run.py
+
+# 常驻服务 
+nohup python3 run.py &
 ```
 
 ### 重启服务
@@ -111,6 +117,10 @@ python3 run.py stop
 ```bash
 # 查看服务运行状态、进程信息和API可用性
 python3 run.py status
+
+# 查看 5566 port 的运行状态
+netstat -tuln | grep 5566
+(windows)netstat -ano | findstr 5566
 ```
 
 ### 设置服务配置
@@ -286,7 +296,12 @@ python3 run.py set --api-key sk-your-default-key
 
 ## 使用示例
 
-### URL内容总结
+### 内容总结功能
+
+设定环境 key
+'$env:SUMBOT_API_KEY = "sk-your-api-key-here"'
+
+#### URL内容总结
 
 ```python
 # 使用Python requests库调用URL总结API的示例
@@ -339,6 +354,101 @@ except requests.exceptions.HTTPError as e:
 请求头说明：
 - `Content-Type`: 必填，值为 `application/json`
 - `Authorization`: 必填，值为 `Bearer YOUR_API_KEY`
+
+#### 文件内容总结
+
+支持多种文件格式的内容总结，包括：
+- 文本文件（.txt, .md）
+- PDF文档
+- Word文档
+- 代码文件
+
+请求示例：
+```python
+import requests
+
+url = "http://localhost:5566/api/v1/summarize/file"
+headers = {
+    "Authorization": f"Bearer {api_key}"
+}
+files = {
+    'file': open('example.pdf', 'rb')
+}
+
+response = requests.post(url, files=files, headers=headers)
+print(response.json())
+```
+
+#### 视频内容总结
+
+支持以下平台的视频内容总结：
+- B站
+- 抖音
+- YouTube
+- 小红书
+
+请求示例：
+```python
+import requests
+
+url = "http://localhost:5566/api/v1/summarize/video"
+headers = {
+    "Authorization": f"Bearer {api_key}"
+}
+data = {
+    "url": "https://www.bilibili.com/video/BV1xx411c7mD"
+}
+
+response = requests.post(url, json=data, headers=headers)
+print(response.json())
+```
+
+#### 图片内容分析
+
+支持图片内容识别和分析，包括：
+- 文字识别（OCR）
+- 图像描述生成
+- 图像分类
+
+请求示例：
+```python
+import requests
+
+url = "http://localhost:5566/api/v1/analyze/image"
+headers = {
+    "Authorization": f"Bearer {api_key}"
+}
+files = {
+    'file': open('example.jpg', 'rb')
+}
+
+response = requests.post(url, files=files, headers=headers)
+print(response.json())
+```
+
+#### 搜索内容总结
+
+支持对搜索结果进行总结，包括：
+- 网页搜索
+- 学术论文搜索
+- 新闻搜索
+
+请求示例：
+```python
+import requests
+
+url = "http://localhost:5566/api/v1/summarize/search"
+headers = {
+    "Authorization": f"Bearer {api_key}"
+}
+data = {
+    "query": "人工智能最新进展",
+    "max_results": 5
+}
+
+response = requests.post(url, json=data, headers=headers)
+print(response.json())
+```
 
 ### URL历史记录
 

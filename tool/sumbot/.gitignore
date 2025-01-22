@@ -3,11 +3,17 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.so
+*.pyc
+*.pyo
+*.pyd
+.Python
 
 # Virtual Environment
 venv/
 env/
 ENV/
+venv\
+pip-log.txt
 
 # IDE
 .vscode/
@@ -30,3 +36,17 @@ james-note.md
 .DS_Store
 Thumbs.db
 *.pid
+
+# Test files and directories
+tests/
+**/test_*.py
+*_test.py
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+coverage/
+
+# Keep test fixtures
+!tests/__init__.py
+!tests/fixtures/
